@@ -1,0 +1,8 @@
+set interfaces lo0 unit 0 family inet address 192.0.2.8/32
+set policy-options policy-statement myroutes from protocol direct
+set policy-options policy-statement myroutes then accept
+set routing-options router-id 192.0.2.8
+set routing-options autonomous-system 20
+set protocols bgp group To_PE2 export myroutes
+set protocols bgp group To_PE2 peer-as 200
+set protocols bgp group To_PE2 neighbor 198.51.200.1
