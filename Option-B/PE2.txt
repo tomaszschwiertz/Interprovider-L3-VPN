@@ -1,0 +1,31 @@
+set interfaces lo0 unit 0 family inet address 192.168.200.1/32
+set policy-options policy-statement vpnexport term 1 from protocol bgp
+set policy-options policy-statement vpnexport term 1 then community add pe2_comm
+set policy-options policy-statement vpnexport term 1 then accept
+set policy-options policy-statement vpnexport term 10 then reject
+set policy-options policy-statement vpnimport term 1 from protocol bgp
+set policy-options policy-statement vpnimport term 1 from community pe1_comm
+set policy-options policy-statement vpnimport term 1 then accept
+set policy-options policy-statement vpnimport term 10 then reject
+set policy-options community pe1_comm members target:65100:1
+set policy-options community pe2_comm members target:65200:1
+set routing-instances to_CE2 protocols bgp group to_CE2 peer-as 65020
+set routing-instances to_CE2 protocols bgp group to_CE2 neighbor 172.16.2.1
+set routing-instances to_CE2 instance-type vrf
+set routing-instances to_CE2 interface ge-0/0/0.101
+set routing-instances to_CE2 route-distinguisher 192.168.200.1:1
+set routing-instances to_CE2 vrf-import vpnimport
+set routing-instances to_CE2 vrf-export vpnexport
+set routing-options router-id 192.168.200.1
+set routing-options autonomous-system 65200
+set protocols bgp group iBGP type internal
+set protocols bgp group iBGP local-address 192.168.200.1
+set protocols bgp group iBGP family inet-vpn unicast
+set protocols bgp group iBGP neighbor 192.168.200.3
+set protocols mpls label-switched-path to_ASBR2 to 192.168.200.3
+set protocols mpls interface ge-0/0/1.0
+set protocols ospf traffic-engineering
+set protocols ospf area 0.0.0.0 interface lo0.0
+set protocols ospf area 0.0.0.0 interface ge-0/0/1.0
+set protocols rsvp interface lo0.0
+set protocols rsvp interface ge-0/0/1.0
