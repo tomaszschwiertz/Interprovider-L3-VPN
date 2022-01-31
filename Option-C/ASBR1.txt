@@ -1,0 +1,30 @@
+//Include the traffic-engineering bgp-igp-both-ribs statement
+//enable family MPLS on interface between ASBR’s
+
+set interfaces ge-0/0/1 vlan-tagging
+set interfaces ge-0/0/1 unit 101 vlan-id 101
+set interfaces ge-0/0/1 unit 101 family inet address 41.255.10.1/24
+set interfaces ge-0/0/1 unit 101 family mpls
+set interfaces lo0 unit 0 family inet address 192.100.2.3/32
+set policy-options policy-statement ext-to-ASBR2 term 1 from route-filter 192.100.2.1/32 exact
+set policy-options policy-statement ext-to-ASBR2 term 1 then accept
+set policy-options policy-statement ext-to-ASBR2 term 10 then reject
+set policy-options policy-statement next-hop-self then next-hop self
+set routing-options router-id 192.100.2.3
+set routing-options autonomous-system 100
+set protocols bgp group To_PE1 type internal
+set protocols bgp group To_PE1 local-address 192.100.2.3
+set protocols bgp group To_PE1 neighbor 192.100.2.1 family inet labeled-unicast
+set protocols bgp group To_PE1 neighbor 192.100.2.1 export next-hop-self
+set protocols bgp group To_ASBR2 type external
+set protocols bgp group To_ASBR2 family inet labeled-unicast
+set protocols bgp group To_ASBR2 export ext-to-ASBR2
+set protocols bgp group To_ASBR2 neighbor 41.255.10.2 peer-as 200
+set protocols mpls traffic-engineering bgp-igp-both-ribs
+set protocols mpls label-switched-path to_PE1 to 192.100.2.1
+set protocols mpls label-range dynamic-label-range 500300 500399
+set protocols mpls interface ge-0/0/3.0
+set protocols ospf traffic-engineering
+set protocols ospf area 0.0.0.0 interface lo0.0
+set protocols ospf area 0.0.0.0 interface ge-0/0/3.0
+set protocols rsvp interface ge-0/0/3.0
