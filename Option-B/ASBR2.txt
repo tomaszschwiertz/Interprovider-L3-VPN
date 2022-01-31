@@ -1,0 +1,20 @@
+set interfaces ge-0/0/0 description to_ASBR1
+set interfaces ge-0/0/0 unit 0 family inet address 172.16.12.2/30
+set interfaces ge-0/0/0 unit 0 family mpls
+set interfaces lo0 unit 0 family inet address 192.168.200.3/32
+set routing-options router-id 192.168.200.3
+set routing-options autonomous-system 65200
+set protocols bgp group iBGP type internal
+set protocols bgp group iBGP local-address 192.168.200.3
+set protocols bgp group iBGP family inet-vpn unicast
+set protocols bgp group iBGP neighbor 192.168.200.1
+set protocols bgp group to-ASBR1 type external
+set protocols bgp group to-ASBR1 family inet-vpn unicast
+set protocols bgp group to-ASBR1 neighbor 172.16.12.1 peer-as 65100
+set protocols mpls label-switched-path to_PE2 to 192.168.200.1
+set protocols mpls interface ge-0/0/2.0
+set protocols ospf traffic-engineering
+set protocols ospf area 0.0.0.0 interface lo0.0
+set protocols ospf area 0.0.0.0 interface ge-0/0/2.0
+set protocols rsvp interface ge-0/0/2.0
+set protocols rsvp interface lo0.0
