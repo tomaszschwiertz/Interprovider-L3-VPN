@@ -1,0 +1,36 @@
+set interfaces lo0 unit 0 family inet address 192.168.100.1/32
+set policy-options policy-statement bgp-to-ospf term 1 from protocol bgp
+set policy-options policy-statement bgp-to-ospf term 1 then accept
+set policy-options policy-statement bgp-to-ospf term 10 then reject
+set policy-options policy-statement vpnexport term 1 from protocol ospf
+set policy-options policy-statement vpnexport term 1 then community add pe1_comm
+set policy-options policy-statement vpnexport term 1 then accept
+set policy-options policy-statement vpnexport term 10 then reject
+set policy-options policy-statement vpnimport term 1 from protocol bgp
+set policy-options policy-statement vpnimport term 1 from community pe2_comm
+set policy-options policy-statement vpnimport term 1 then accept
+set policy-options policy-statement vpnimport term 10 then reject
+set policy-options community pe1_comm members target:65100:1
+set policy-options community pe2_comm members target:65200:1
+set routing-instances to_CE1 protocols ospf area 0.0.0.0 interface ge-0/0/0.101
+set routing-instances to_CE1 protocols ospf export bgp-to-ospf
+set routing-instances to_CE1 instance-type vrf
+set routing-instances to_CE1 interface ge-0/0/0.101
+set routing-instances to_CE1 route-distinguisher 192.168.100.1:1
+set routing-instances to_CE1 vrf-import vpnimport
+set routing-instances to_CE1 vrf-export vpnexport
+set routing-options router-id 192.168.100.1
+set routing-options autonomous-system 65100
+set protocols bgp group iBGP type internal
+set protocols bgp group iBGP local-address 192.168.100.1
+set protocols bgp group iBGP family inet-vpn unicast
+set protocols bgp group iBGP neighbor 192.168.100.3
+set protocols mpls label-switched-path to_ASBR1 traceoptions file cspf
+set protocols mpls label-switched-path to_ASBR1 traceoptions flag all
+set protocols mpls label-switched-path to_ASBR1 to 192.168.100.3
+set protocols mpls interface ge-0/0/1.0
+set protocols ospf traffic-engineering
+set protocols ospf area 0.0.0.0 interface lo0.0
+set protocols ospf area 0.0.0.0 interface ge-0/0/1.0
+set protocols rsvp interface ge-0/0/1.0
+set protocols rsvp interface lo0.0
