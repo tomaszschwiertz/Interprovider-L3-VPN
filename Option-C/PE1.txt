@@ -1,0 +1,41 @@
+For a PE router to install a route in the VRF, the next hop must resolve to a route stored within the inet.3 table.
+The labelled-unicast resolve-vpn statements allow labelled routes to be placed in the inet.3 routing table for route resolution,
+which are then resolved for PE router connections where the remote PE is located across another AS
+
+set interfaces lo0 unit 0 family inet address 192.100.2.1/32
+set policy-options policy-statement bgp-to-ospf term 1 from protocol bgp
+set policy-options policy-statement bgp-to-ospf term 1 then accept
+set policy-options policy-statement bgp-to-ospf term 10 then reject
+set policy-options policy-statement vpnexport term 1 from protocol ospf
+set policy-options policy-statement vpnexport term 1 then community add vpn_CUST1
+set policy-options policy-statement vpnexport term 1 then accept
+set policy-options policy-statement vpnexport term 10 then reject
+set policy-options policy-statement vpnimport term 1 from protocol bgp
+set policy-options policy-statement vpnimport term 1 from community vpn_CUST1
+set policy-options policy-statement vpnimport term 1 then accept
+set policy-options policy-statement vpnimport term 10 then reject
+set policy-options community vpn_CUST1 members target:1:100
+set routing-instances vpn2CE1 protocols ospf area 0.0.0.2 interface ge-0/0/1.101
+set routing-instances vpn2CE1 protocols ospf export bgp-to-ospf
+set routing-instances vpn2CE1 instance-type vrf
+set routing-instances vpn2CE1 interface ge-0/0/1.101
+set routing-instances vpn2CE1 route-distinguisher 1:100
+set routing-instances vpn2CE1 vrf-import vpnimport
+set routing-instances vpn2CE1 vrf-export vpnexport
+set routing-options router-id 192.100.2.1
+set routing-options autonomous-system 100
+set protocols bgp group To_ASBR1 type internal
+set protocols bgp group To_ASBR1 local-address 192.100.2.1
+set protocols bgp group To_ASBR1 neighbor 192.100.2.3 family inet labeled-unicast resolve-vpn
+set protocols bgp group To_PE2 type external
+set protocols bgp group To_PE2 multihop ttl 20
+set protocols bgp group To_PE2 local-address 192.100.2.1
+set protocols bgp group To_PE2 family inet-vpn unicast
+set protocols bgp group To_PE2 neighbor 192.200.2.1 peer-as 200
+set protocols mpls label-switched-path to_ASBR1 to 192.100.2.3
+set protocols mpls label-range dynamic-label-range 500100 500199
+set protocols mpls interface ge-0/0/2.0
+set protocols ospf traffic-engineering
+set protocols ospf area 0.0.0.0 interface lo0.0
+set protocols ospf area 0.0.0.0 interface ge-0/0/2.0
+set protocols rsvp interface ge-0/0/2.0
