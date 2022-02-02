@@ -1,0 +1,29 @@
+set interfaces lo0 unit 0 family inet address 192.200.2.1/32
+set interfaces lo0 unit 0 family iso address 49.1922.0000.2001.00
+set policy-options policy-statement vpnCE2export term 1 from protocol bgp
+set policy-options policy-statement vpnCE2export term 1 then community add test_200_comm
+set policy-options policy-statement vpnCE2export term 1 then accept
+set policy-options policy-statement vpnCE2export term 10 then reject
+set policy-options policy-statement vpnCE2import term 1 from protocol bgp
+set policy-options policy-statement vpnCE2import term 1 from community test_200_comm
+set policy-options policy-statement vpnCE2import term 1 then accept
+set policy-options policy-statement vpnCE2import term 10 then reject
+set policy-options community test_200_comm members target:1:200
+set routing-instances VPN2CE2 protocols bgp group to_CE2 neighbor 198.51.200.2 peer-as 20
+set routing-instances VPN2CE2 instance-type vrf
+set routing-instances VPN2CE2 interface ge-0/0/1.101
+set routing-instances VPN2CE2 route-distinguisher 1:200
+set routing-instances VPN2CE2 vrf-import vpnCE2import
+set routing-instances VPN2CE2 vrf-export vpnCE2export
+set routing-options router-id 192.200.2.1
+set routing-options autonomous-system 200
+set protocols bgp group iBGP type internal
+set protocols bgp group iBGP local-address 192.200.2.1
+set protocols bgp group iBGP family inet-vpn unicast
+set protocols bgp group iBGP neighbor 192.200.2.3
+set protocols isis interface ge-0/0/2.0
+set protocols isis interface lo0.0
+set protocols isis level 1 disable
+set protocols mpls label-switched-path to_ASBR2 to 192.200.2.3
+set protocols mpls interface ge-0/0/2.0
+set protocols rsvp interface ge-0/0/2.0
