@@ -1,0 +1,34 @@
+set interfaces lo0 unit 0 family inet address 192.100.2.1/32
+set interfaces lo0 unit 0 family iso address 49.1921.0000.2001.00
+set policy-options policy-statement RED_BGP_TO_OSPF term 1 from protocol bgp
+set policy-options policy-statement RED_BGP_TO_OSPF term 1 then trace
+set policy-options policy-statement RED_BGP_TO_OSPF term 1 then accept
+set policy-options policy-statement RED_BGP_TO_OSPF term 10 then reject
+set policy-options policy-statement vpnCE1export term 1 from protocol ospf
+set policy-options policy-statement vpnCE1export term 1 then community add test_100_comm
+set policy-options policy-statement vpnCE1export term 1 then accept
+set policy-options policy-statement vpnCE1export term 10 then reject
+set policy-options policy-statement vpnCE1import term 1 from protocol bgp
+set policy-options policy-statement vpnCE1import term 1 from community test_100_comm
+set policy-options policy-statement vpnCE1import term 1 then accept
+set policy-options policy-statement vpnCE1import term 10 then reject
+set policy-options community test_100_comm members target:1:100
+set routing-instances VPN2CE1 protocols ospf area 0.0.0.2 interface ge-0/0/1.101
+set routing-instances VPN2CE1 protocols ospf export RED_BGP_TO_OSPF
+set routing-instances VPN2CE1 instance-type vrf
+set routing-instances VPN2CE1 interface ge-0/0/1.101
+set routing-instances VPN2CE1 route-distinguisher 1:100
+set routing-instances VPN2CE1 vrf-import vpnCE1import
+set routing-instances VPN2CE1 vrf-export vpnCE1export
+set routing-options router-id 192.100.2.1
+set routing-options autonomous-system 100
+set protocols bgp group iBGP type internal
+set protocols bgp group iBGP local-address 192.100.2.1
+set protocols bgp group iBGP family inet-vpn unicast
+set protocols bgp group iBGP neighbor 192.100.2.3
+set protocols isis interface ge-0/0/2.0
+set protocols isis interface lo0.0
+set protocols isis level 1 disable
+set protocols mpls label-switched-path to_ASBR1 to 192.100.2.3
+set protocols mpls interface ge-0/0/2.0 
+set protocols rsvp interface ge-0/0/2.0
