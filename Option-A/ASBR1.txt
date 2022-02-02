@@ -1,0 +1,20 @@
+set interfaces lo0 unit 0 family inet address 192.100.2.3/32
+set interfaces lo0 unit 0 family iso address 49.1921.0000.2003.00
+set routing-instances To_ASBR2 protocols bgp group To_ASBR2 type external
+set routing-instances To_ASBR2 protocols bgp group To_ASBR2 neighbor 41.255.10.2 peer-as 200
+set routing-instances To_ASBR2 instance-type vrf
+set routing-instances To_ASBR2 interface ge-0/0/1.101
+set routing-instances To_ASBR2 route-distinguisher 1:100
+set routing-instances To_ASBR2 vrf-target target:1:100
+set routing-options router-id 192.100.2.3
+set routing-options autonomous-system 100
+set protocols bgp group iBGP type internal
+set protocols bgp group iBGP local-address 192.100.2.3
+set protocols bgp group iBGP family inet-vpn unicast
+set protocols bgp group iBGP neighbor 192.100.2.1
+set protocols isis interface ge-0/0/3.0 
+set protocols isis interface lo0.0
+set protocols isis level 1 disable
+set protocols mpls label-switched-path to_PE1 to 192.100.2.1
+set protocols mpls interface ge-0/0/3.0
+set protocols rsvp interface ge-0/0/3.0
