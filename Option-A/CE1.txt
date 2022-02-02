@@ -1,1 +1,7 @@
-
+set interfaces ge-0/0/1 vlan-tagging
+set interfaces ge-0/0/1 unit 101 vlan-id 101
+set interfaces ge-0/0/1 unit 101 family inet address 198.51.100.2/24
+set interfaces lo0 unit 0 family inet address 192.0.2.1/32
+set routing-options router-id 192.0.2.1
+set protocols ospf area 0.0.0.2 interface lo0.0
+set protocols ospf area 0.0.0.2 interface ge-0/0/1.101
