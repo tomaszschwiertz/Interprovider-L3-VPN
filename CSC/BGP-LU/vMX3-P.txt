@@ -1,0 +1,14 @@
+set interfaces ge-0/0/0 unit 0 family inet address 169.254.10.3/31
+set interfaces ge-0/0/0 unit 0 family mpls
+set interfaces ge-0/0/1 unit 0 family inet address 169.254.10.4/31
+set interfaces ge-0/0/1 unit 0 family mpls
+set interfaces lo0 unit 0 family inet no-redirects
+set interfaces lo0 unit 0 family inet address 3.3.3.3/32 primary
+set routing-options router-id 3.3.3.3
+set protocols ldp interface ge-0/0/0.0
+set protocols ldp interface ge-0/0/1.0
+set protocols mpls interface ge-0/0/0.0
+set protocols mpls interface ge-0/0/1.0
+set protocols ospf area 0.0.0.0 interface lo0.0
+set protocols ospf area 0.0.0.0 interface ge-0/0/0.0 interface-type p2p
+set protocols ospf area 0.0.0.0 interface ge-0/0/1.0 interface-type p2p
