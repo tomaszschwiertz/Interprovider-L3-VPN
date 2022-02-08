@@ -1,0 +1,27 @@
+set interfaces ge-0/0/0 unit 0 family inet address 169.254.10.23/31
+set interfaces ge-0/0/0 unit 0 family mpls
+set interfaces ge-0/0/1 unit 0 family inet address 169.254.10.24/31
+set interfaces lo0 unit 0 family inet no-redirects
+set interfaces lo0 unit 0 family inet address 13.13.13.13/32 primary
+set routing-instances customer routing-options autonomous-system 65004
+set routing-instances customer protocols bgp group customer1 type external
+set routing-instances customer protocols bgp group customer1 neighbor 169.254.10.25 peer-as 65003
+set routing-instances customer instance-type vrf
+set routing-instances customer interface ge-0/0/1.0
+set routing-instances customer route-distinguisher 100:100
+set routing-instances customer vrf-target target:100:100
+set routing-instances customer vrf-table-label
+set routing-options router-id 13.13.13.13
+set routing-options autonomous-system 65100
+set protocols bgp group internal type internal
+set protocols bgp group internal local-address 13.13.13.13
+set protocols bgp group internal family inet labeled-unicast resolve-vpn
+set protocols bgp group internal neighbor 10.10.10.10 peer-as 65100
+set protocols bgp group vpn type internal
+set protocols bgp group vpn family inet-vpn unicast
+set protocols bgp group vpn neighbor 2.2.2.2 local-address 13.13.13.13
+set protocols bgp group vpn neighbor 2.2.2.2 peer-as 65100
+set protocols ldp interface ge-0/0/0.0
+set protocols mpls interface ge-0/0/0.0
+set protocols ospf area 0.0.0.0 interface lo0.0
+set protocols ospf area 0.0.0.0 interface ge-0/0/0.0 interface-type p2p
