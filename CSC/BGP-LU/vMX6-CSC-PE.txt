@@ -1,0 +1,30 @@
+set interfaces ge-0/0/0 unit 0 family inet address 169.254.10.9/31
+set interfaces ge-0/0/0 unit 0 family mpls
+set interfaces ge-0/0/1 unit 0 family inet address 169.254.10.10/31
+set interfaces ge-0/0/1 unit 0 family mpls
+set interfaces lo0 unit 0 family inet no-redirects
+set interfaces lo0 unit 0 family inet address 6.6.1.1/32
+set routing-instances orange_carrier routing-options router-id 6.6.6.6
+set routing-instances orange_carrier routing-options autonomous-system 65200
+set routing-instances orange_carrier protocols bgp group to_orange_carrier type external
+set routing-instances orange_carrier protocols bgp group to_orange_carrier family inet labeled-unicast
+set routing-instances orange_carrier protocols bgp group to_orange_carrier neighbor 169.254.10.8 peer-as 65100
+set routing-instances orange_carrier protocols bgp group to_orange_carrier neighbor 169.254.10.8 as-override
+set routing-instances orange_carrier protocols mpls interface ge-0/0/0.0
+set routing-instances orange_carrier instance-type vrf
+set routing-instances orange_carrier interface ge-0/0/0.0
+set routing-instances orange_carrier route-distinguisher 1:1
+set routing-instances orange_carrier vrf-target target:1:1
+set routing-instances orange_carrier vrf-table-label
+set routing-options router-id 6.6.1.1   
+set routing-options autonomous-system 65200
+set protocols bgp group green_carrier_vpn type internal
+set protocols bgp group green_carrier_vpn family inet-vpn unicast
+set protocols bgp group green_carrier_vpn neighbor 9.9.1.1 local-address 6.6.1.1
+set protocols bgp group green_carrier_vpn neighbor 9.9.1.1 peer-as 65200
+set protocols mpls label-switched-path to-vmx9 to 9.9.1.1
+set protocols mpls interface ge-0/0/1.0
+set protocols ospf traffic-engineering
+set protocols ospf area 0.0.0.0 interface lo0.0
+set protocols ospf area 0.0.0.0 interface ge-0/0/1.0 interface-type p2p
+set protocols rsvp interface ge-0/0/1.0
