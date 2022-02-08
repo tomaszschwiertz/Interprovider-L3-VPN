@@ -1,0 +1,31 @@
+set interfaces ge-0/0/0 unit 0 family inet address 169.254.10.17/31
+set interfaces ge-0/0/0 unit 0 family mpls
+set interfaces ge-0/0/1 unit 0 family inet address 169.254.10.18/31
+set interfaces ge-0/0/1 unit 0 family mpls
+set interfaces lo0 unit 0 family inet no-redirects
+set interfaces lo0 unit 0 family inet address 10.10.10.10/32 primary
+set policy-options prefix-list local_loops 10.10.10.10/32
+set policy-options prefix-list local_loops 11.11.11.11/32
+set policy-options prefix-list local_loops 12.12.12.12/32
+set policy-options prefix-list local_loops 13.13.13.13/32
+set policy-options policy-statement to_green_carrier term local_loops from prefix-list local_loops
+set policy-options policy-statement to_green_carrier term local_loops then accept
+set policy-options policy-statement to_green_carrier then reject
+set routing-options router-id 10.10.10.10
+set routing-options autonomous-system 65100
+set protocols bgp group internal type internal
+set protocols bgp group internal local-address 10.10.10.10
+set protocols bgp group internal family inet labeled-unicast
+set protocols bgp group internal neighbor 13.13.13.13 peer-as 65100
+set protocols bgp group to_green_carrier type external
+set protocols bgp group to_green_carrier family inet labeled-unicast
+set protocols bgp group to_green_carrier export to_green_carrier
+set protocols bgp group to_green_carrier neighbor 169.254.10.16 peer-as 65200
+set protocols ldp interface ge-0/0/0.0
+set protocols ldp interface ge-0/0/1.0
+set protocols mpls traffic-engineering mpls-forwarding
+set protocols mpls interface ge-0/0/0.0
+set protocols mpls interface ge-0/0/1.0
+set protocols ospf area 0.0.0.0 interface lo0.0
+set protocols ospf area 0.0.0.0 interface ge-0/0/0.0 interface-type p2p
+set protocols ospf area 0.0.0.0 interface ge-0/0/1.0 interface-type p2p
