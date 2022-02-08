@@ -1,0 +1,11 @@
+set interfaces ge-0/0/0 unit 0 family inet address 10.10.10.1/24
+set interfaces ge-0/0/1 unit 0 family inet address 169.254.10.0/31
+set policy-options prefix-list customer_routes 10.10.10.0/24
+set policy-options policy-statement customer_routes term direct from protocol direct
+set policy-options policy-statement customer_routes term direct from prefix-list customer_routes
+set policy-options policy-statement customer_routes term direct then accept
+set policy-options policy-statement customer_routes then reject
+set routing-options autonomous-system 65001
+set protocols bgp group to_provider type external
+set protocols bgp group to_provider export customer_routes
+set protocols bgp group to_provider neighbor 169.254.10.1 peer-as 65002
